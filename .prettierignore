@@ -4,6 +4,7 @@ node_modules
 packages/engine
 apps/*/public/wasm_exec.js
 apps/*/public/engine.wasm
+apps/*/public/engine.wasm.br
 apps/tma/public/skins
 apps/youtube/public/skins
 package-lock.json

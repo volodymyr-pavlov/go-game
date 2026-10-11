@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc",
+    "typecheck": "tsc && tsc -p worker",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:firebase": "sh scripts/firebase-auth-emulator.sh \"VITE_FIREBASE_EMULATOR=127.0.0.1 npx playwright test\"",
@@ -25,6 +25,7 @@
     "firebase": "^12.19.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260921.1",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/canvas-confetti": "^1.9.0",

@@ -24,6 +24,11 @@ The leaderboard. The code is in the repository, but a build without the `VITE_FI
 - Skeletons of a Telegram Mini App and a YouTube Playable, with the same game against the engine on the shared board. The game
   server accepts a Telegram sign-in (`Authorization: tma <initData>`, checked with the bot token). Telegram Stars are not on sale.
 
+### Changed
+
+- The engine downloads as 0.96 MB instead of 1.2 MB: the build compresses it once with Brotli at the highest level, and a
+  Worker in front of the site serves that file to browsers that accept Brotli.
+
 ## [1.0.0] - 2026-09-24
 
 First release.

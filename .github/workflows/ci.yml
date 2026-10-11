@@ -73,6 +73,7 @@ jobs:
           path: |
             apps/*/public/engine.wasm
             apps/*/public/wasm_exec.js
+            apps/web/public/engine.wasm.br
           retention-days: 1
 
   # The game on the real board. The tests with accounts and online play skip themselves: they need

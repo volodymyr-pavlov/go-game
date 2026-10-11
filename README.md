@@ -81,7 +81,9 @@ free again.
 
 ## Production setup
 
-**The game alone (1.0.0).** It is a static site on Cloudflare. The `wrangler` command comes with `npm install`.
+**The game alone (1.0.0).** It is a static site on Cloudflare, with a small Worker in front of it (`apps/web/worker/`)
+that serves `engine.wasm` as the Brotli file the build made, a quarter smaller than what Cloudflare compresses on the
+fly. The `wrangler` command comes with `npm install`.
 
 1. `npx wrangler login`. The first deploy creates the site, and it gets the address
    `https://go-game.<your-subdomain>.workers.dev`.
@@ -134,6 +136,7 @@ go-game/
 │   │   ├── src/                # main.ts, firebase/, ui/, analytics/, styles/
 │   │   ├── e2e/                # Playwright: gameplay on the real board, accounts and online play against the emulator
 │   │   ├── public/             # served as is: privacy and terms, skins/, and the compiled engine
+│   │   ├── worker/             # the Worker in front of the static site: serves engine.wasm compressed at build time
 │   │   └── firebase/           # firebase.json: the Auth emulator
 │   ├── api/                    # the game server, Hono on a Cloudflare Worker
 │   │   ├── migrations/         # D1 SQL migrations
