@@ -1,0 +1,20 @@
+{
+  "name": "@go-game/youtube",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node ../../scripts/sync-skins.mjs youtube && vite",
+    "build": "node ../../scripts/sync-skins.mjs youtube && tsc && vite build",
+    "typecheck": "tsc",
+    "pack": "npm run build && cd .dist && zip -qr ../playables.zip ."
+  },
+  "dependencies": {
+    "@go-game/core": "*",
+    "@go-game/presentation": "*",
+    "@go-game/types": "*"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
+  }
+}

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Nine-by-Nine Go</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: var(--tg-theme-bg-color, #f1f5f9);
+        --fg: var(--tg-theme-text-color, #0f172a);
+        --button: var(--tg-theme-button-color, #b45309);
+        --button-fg: var(--tg-theme-button-text-color, #ffffff);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          16px system-ui,
+          sans-serif;
+        touch-action: manipulation;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 12px env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      }
+      #status {
+        min-height: 1.5em;
+        text-align: center;
+        font-weight: 600;
+      }
+      #board {
+        width: min(100vw - 24px, 100dvh - 190px);
+        aspect-ratio: 1;
+        touch-action: none;
+      }
+      #buttons {
+        display: flex;
+        gap: 8px;
+      }
+      button {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 12px;
+        background: var(--button);
+        color: var(--button-fg);
+        font: inherit;
+        font-weight: 600;
+      }
+      #message {
+        min-height: 1.5em;
+        font-size: 14px;
+        opacity: 0.8;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="status" role="status"></div>
+    <div id="board"></div>
+    <div id="message" role="status"></div>
+    <div id="buttons">
+      <button id="pass" type="button">Pass</button>
+      <button id="resign" type="button">Resign</button>
+      <button id="new" type="button">New game</button>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

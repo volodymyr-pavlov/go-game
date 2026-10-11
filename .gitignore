@@ -1,0 +1,22 @@
+# Local files: notes, editor and OS files, and the Firebase web app config (a copy of .env.example)
+.scratch/
+.DS_Store
+.idea/
+.env
+
+# Files that tools write
+.logs/
+.reports/
+.vitest/
+.firebase/
+firebase-debug.log
+.wrangler/
+.turbo/
+
+# Generated files: dependencies, the production build, and the engine that packages/engine/scripts/build.sh compiles
+node_modules/
+.dist/
+apps/*/public/engine.wasm
+apps/*/public/wasm_exec.js
+apps/tma/public/skins/
+apps/youtube/public/skins/

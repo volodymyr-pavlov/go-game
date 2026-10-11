@@ -1,0 +1,7 @@
+{
+  "extends": "@go-game/tsconfig/dom.json",
+  "compilerOptions": {
+    "types": ["vite/client", "node"]
+  },
+  "include": ["src", "*.config.ts"]
+}

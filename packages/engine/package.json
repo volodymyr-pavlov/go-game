@@ -1,0 +1,9 @@
+{
+  "name": "@go-game/engine",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build:wasm": "sh scripts/build.sh",
+    "test": "go vet ./... && go test ./..."
+  }
+}

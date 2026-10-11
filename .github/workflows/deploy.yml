@@ -1,0 +1,73 @@
+# Phase 2, started by hand from the Actions page. Each target needs the secrets and variables named in the README under
+# "Production setup": the API token also needs the "D1: Edit" permission for the game server.
+name: Deploy by hand
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: What to deploy
+        type: choice
+        required: true
+        options: [api, tma]
+
+permissions: {}
+
+env:
+  NODE_VERSION: '24'
+  DO_NOT_TRACK: '1'
+
+jobs:
+  # The game server: apply the D1 migrations, then put the Worker and the site online.
+  api:
+    if: ${{ inputs.target == 'api' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci --prefer-offline --ignore-scripts
+      - run: npx wrangler d1 migrations apply DB --remote --config apps/api/wrangler.jsonc
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - run: npx wrangler deploy --config apps/api/wrangler.jsonc --message "${GITHUB_SHA::8}"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  # The Telegram Mini App: build it with the engine, then put it online.
+  tma:
+    if: ${{ inputs.target == 'tma' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: packages/engine/go.mod
+          cache-dependency-path: packages/engine/go.sum
+      - run: sh packages/engine/scripts/build.sh
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci --prefer-offline --ignore-scripts
+      - run: npm run build -w @go-game/tma
+      - run: npx wrangler deploy --config apps/tma/wrangler.jsonc --message "${GITHUB_SHA::8}"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

@@ -1,0 +1,12 @@
+{
+  "name": "@go-game/types",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "typecheck": "tsc"
+  }
+}

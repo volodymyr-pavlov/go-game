@@ -1,0 +1,39 @@
+{
+  "name": "go-game",
+  "private": true,
+  "license": "MIT",
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "npm@11.12.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --filter=@go-game/web",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "test:e2e:firebase": "turbo run test:e2e:firebase",
+    "lint": "node scripts/check-tsdoc.mjs",
+    "check": "turbo run typecheck test:unit && prettier --check . && npm run lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "firebase:auth-emulator": "npm run firebase:auth-emulator -w @go-game/web",
+    "cloudflare:dev": "npm run dev -w @go-game/api",
+    "cloudflare:migrate:local": "npm run migrate:local -w @go-game/api",
+    "dev:tma": "turbo run dev --filter=@go-game/tma",
+    "dev:youtube": "turbo run dev --filter=@go-game/youtube"
+  },
+  "devDependencies": {
+    "@microsoft/tsdoc": "^0.17.0",
+    "@types/node": "^26.6.2",
+    "prettier": "^3.9.8",
+    "turbo": "^2.5.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.1"
+  }
+}

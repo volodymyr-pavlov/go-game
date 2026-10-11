@@ -1,0 +1,127 @@
+/* The fonts come from this site, so the page never waits for another server. */
+@import '@fontsource/plus-jakarta-sans/400.css';
+@import '@fontsource/plus-jakarta-sans/500.css';
+@import '@fontsource/plus-jakarta-sans/600.css';
+@import '@fontsource/plus-jakarta-sans/700.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+@import 'tailwindcss' prefix(go);
+/* The colours live in public/, so the privacy and terms pages can load the same file. */
+@import '../../public/tokens.css';
+
+/* Every class name starts with go- or go:. The only rule on a plain element is button:disabled, in the base layer. Third-party scripts that the page can load (reCAPTCHA for App Check, Google
+   Analytics) bring their own stylesheets, and a plain name like .card or .hidden could collide with theirs. */
+@theme inline {
+  --color-canvas: var(--go-canvas);
+  --color-surface: var(--go-surface);
+  --color-inset: var(--go-inset);
+  --color-input: var(--go-input);
+  --color-control: var(--go-control);
+  --color-control-hover: var(--go-control-hover);
+  --color-line: var(--go-line);
+  --color-line-strong: var(--go-line-strong);
+  --color-fg: var(--go-fg);
+  --color-fg-soft: var(--go-fg-soft);
+  --color-fg-muted: var(--go-fg-muted);
+  --color-accent: var(--go-accent);
+  --color-highlight: var(--go-highlight);
+  --color-primary: var(--go-primary);
+  --color-primary-hover: var(--go-primary-hover);
+  --color-primary-line: var(--go-primary-line);
+  --color-good: var(--go-good);
+  --color-danger: var(--go-danger);
+  --color-danger-soft: var(--go-danger-soft);
+  --color-scrim: var(--go-scrim);
+  --color-shade: var(--go-shade);
+}
+
+:root {
+  color-scheme: light;
+}
+
+/* The pieces of the page that repeat. Each is one utility, so a change to a card or a modal is made in one place. */
+@utility card-shadow {
+  @apply go:shadow-md go:shadow-shade/15;
+}
+@utility card {
+  @apply go:bg-surface go:border go:border-line go:rounded-2xl go:p-3.5 go:card-shadow;
+}
+@utility chip-button {
+  @apply go:px-2.5 go:py-1 go:rounded-lg go:bg-control go:hover:bg-control-hover go:border go:border-line-strong go:text-[11px] go:font-medium go:text-fg-soft go:hover:text-fg go:transition;
+}
+@utility modal-backdrop {
+  @apply go:fixed go:inset-0 go:bg-scrim go:z-50 go:flex go:items-center go:justify-center go:p-4 go:transition-all go:duration-300;
+}
+@utility modal-shell {
+  @apply go:bg-surface go:border go:border-line go:rounded-2xl go:w-full go:max-h-[85vh] go:flex go:flex-col go:shadow-2xl go:shadow-shade/25 go:overflow-hidden;
+}
+@utility modal-head {
+  @apply go:px-6 go:py-4 go:border-b go:border-line go:flex go:items-center go:justify-between;
+}
+@utility modal-close {
+  @apply go:text-fg-muted go:hover:text-fg go:text-lg go:p-1;
+}
+@utility modal-foot {
+  @apply go:p-4 go:border-t go:border-line go:bg-surface go:flex go:justify-end;
+}
+
+/* The page background of the skin goes on the body, over the canvas colour. SkinManager sets the custom properties.
+   It is either a tile repeated at its own size, or a picture that fills the page. Not fixed to the window: iOS
+   Safari ignores background-attachment: fixed once the page itself scrolls, and the body then shows the canvas colour. */
+body {
+  background-image: var(--skin-background, none);
+  background-repeat: var(--skin-background-repeat, no-repeat);
+  background-size: var(--skin-background-size, cover);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--go-inset);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--go-line-strong);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--go-fg-muted);
+}
+
+.go-goban-shadow {
+  box-shadow:
+    0 25px 30px -5px rgb(var(--go-frame-shadow) / 0.35),
+    0 10px 15px -5px rgb(var(--go-frame-shadow) / 0.25),
+    inset 0 1px 2px rgb(255 255 255 / 0.15);
+}
+
+.go-modal-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The one rule for a plain element. It sits in the base layer, like the resets, so a class can override it. */
+@layer base {
+  button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+/* The wooden frame around the board, in the colours of Classic Wood, the only skin that ships. */
+:root {
+  --go-frame-light: #e0c9a6;
+  --go-frame-mid: #cdb086;
+  --go-frame-dark: #b29168;
+  --go-frame-edge: rgb(146 114 78 / 0.9);
+  /* Space-separated channels, so the shadows can set their own opacity. */
+  --go-frame-shadow: 92 64 32;
+}
+.go-board-frame {
+  background: linear-gradient(to bottom, var(--go-frame-light), var(--go-frame-mid), var(--go-frame-dark));
+  border-color: var(--go-frame-edge);
+}

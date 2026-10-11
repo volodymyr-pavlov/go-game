@@ -1,0 +1,16 @@
+{
+  "name": "@go-game/core",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "typecheck": "tsc",
+    "test:unit": "vitest run"
+  },
+  "dependencies": {
+    "@go-game/types": "*"
+  }
+}

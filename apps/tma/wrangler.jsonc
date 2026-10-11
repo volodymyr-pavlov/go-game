@@ -1,0 +1,10 @@
+{
+  // The Telegram Mini App as a static site. `wrangler deploy --config apps/tma/wrangler.jsonc` puts .dist/ online, and the
+  // address it gets is the one to give to the bot as the address of the Mini App.
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "go-game-tma",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": ".dist",
+  },
+}

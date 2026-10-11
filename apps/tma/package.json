@@ -1,0 +1,20 @@
+{
+  "name": "@go-game/tma",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node ../../scripts/sync-skins.mjs tma && vite",
+    "build": "node ../../scripts/sync-skins.mjs tma && tsc && vite build",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@go-game/core": "*",
+    "@go-game/presentation": "*",
+    "@go-game/types": "*",
+    "@go-game/client": "*"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
+  }
+}

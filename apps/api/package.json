@@ -1,0 +1,22 @@
+{
+  "name": "@go-game/api",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/cloudflare-dev.mjs",
+    "migrate:local": "wrangler d1 migrations apply DB --local --config wrangler.jsonc",
+    "typecheck": "tsc",
+    "test:unit": "vitest run"
+  },
+  "dependencies": {
+    "@go-game/core": "*",
+    "@go-game/types": "*",
+    "hono": "^4.13.8",
+    "jose": "^6.2.12"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260921.1",
+    "wrangler": "^4.136.1"
+  }
+}

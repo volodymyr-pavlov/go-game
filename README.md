@@ -11,7 +11,7 @@
 
 A 9x9 game of Go in your browser. You play against Gopher, Bear or Elephant, three levels of an engine that runs _inside_ your browser.
 
-**Play it here:** https://go-game.volodymyr-pavlov-13.workers.dev/
+**Play it here:** https://go-game.volodymyr-pavlov.workers.dev/
 
 ## What is this?
 

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy - Nine-by-Nine Go</title>
+    <meta name="description" content="What this Go game collects: nothing unless you act, and a nickname plus your games if you join the leaderboard or play online." />
+    <meta name="author" content="Volodymyr Pavlov" />
+    <meta name="theme-color" content="#b45309" />
+    <link rel="canonical" href="https://go-game.volodymyr-pavlov.workers.dev/privacy" />
+    <meta property="og:site_name" content="Nine-by-Nine Go" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Privacy - Nine-by-Nine Go" />
+    <meta property="og:description" content="What this Go game collects: nothing unless you act, and a nickname plus your games if you join the leaderboard or play online." />
+    <meta property="og:url" content="https://go-game.volodymyr-pavlov.workers.dev/privacy" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230f172a'/%3E%3Ccircle cx='12' cy='11' r='4' fill='%23ffffff' opacity='.55'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="legal.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Privacy</h1>
+      <p>
+        This is a personal project. Volodymyr Pavlov runs it and is responsible for the personal data described on this
+        page (the controller under the GDPR). If you have a question about this page, send it through the
+        <a href="https://volodymyr-pavlov.github.io/contact.html">contact page</a> of my blog.
+      </p>
+
+      <h2>What This Game Collects</h2>
+      <p>
+        Nothing, unless you do something first. The game, its fonts and the engine all come from this site, and the
+        engine runs inside your browser. Analytics runs only if you allow it. The leaderboard stores an entry only if
+        you join it. Both are explained below.
+      </p>
+
+      <h2>Leaderboard</h2>
+      <p>
+        If you play as a guest, the game signs you in without a name, using Firebase Authentication. You get a random
+        user ID that is kept in your browser. If you link an email and password to keep your nickname on another device,
+        Firebase Authentication stores that email and a hash of the password. The email is not used for anything else,
+        and no message is ever sent to it. When you sign in, Firebase Authentication also gets your IP address and
+        browser details, so it can create and renew your sign-in. Firebase belongs to Google. Google may process this
+        data in the United States under the
+        <a href="https://firebase.google.com/support/privacy">Firebase Privacy and Security</a>
+        terms and the <a href="https://policies.google.com/privacy">Google Privacy Policy</a>.
+      </p>
+      <p>
+        If you claim a nickname, the game server stores these things: your user ID, your nickname, your rating, your
+        wins and losses, the time of the last update, and one record for each finished game. A game record holds the
+        user ID and nickname of your opponent, or the engine level (Gopher, Bear or Elephant), the result, how the game
+        ended (by score, by resignation, or on time), your rating before and after the game, and the time. Your
+        nickname, rating, wins and losses are public. Anyone who opens the game can see the leaderboard. The game
+        server runs on Cloudflare (Workers, the D1 database and Durable Objects). Cloudflare is based in the United
+        States and may process this data there under the
+        <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare Privacy Policy</a>.
+        Every request to the game server also reaches Cloudflare with your IP address and browser details.
+        The legal basis is your consent, which you give by claiming a nickname (Art. 6(1)(a) GDPR).
+      </p>
+      <p>
+        Before you claim a nickname, open a room or join one, the game runs a check from Cloudflare Turnstile to tell a
+        person from a script. Turnstile looks at signals from your browser and your IP address. It follows the same
+        Cloudflare Privacy Policy. The legal basis is a legitimate interest in keeping the service free of abuse
+        (Art. 6(1)(f) GDPR).
+      </p>
+      <p>
+        The guest sign-in is kept in your browser's IndexedDB storage, so this device stays linked to your entry. If
+        you clear the site data or use another device, you start with a new entry. You can delete your entry yourself
+        with "Delete my entry" on your profile page. It removes the nickname, the rating, the game records and the
+        sign-in, including a linked email. If you cannot get to the profile page any more, send the nickname through
+        the contact page, and I will delete it.
+      </p>
+
+      <h2>Online Games</h2>
+      <p>
+        If you open or join a room to play against another visitor, the game server keeps the room in a Durable Object on
+        Cloudflare. A room holds the user IDs and nicknames of both players, the moves, the result, and the time of the
+        last move. Other signed-in visitors see the open rooms with the nickname of the host. A room that nobody joined
+        is removed when the host leaves, or after ten minutes. The record of a finished game stays on the server. It is
+        not removed when you delete your entry, so to have it removed, send the nickname of a player of that game through
+        the contact page. The legal basis is your consent, which you give by opening or joining a room (Art. 6(1)(a)
+        GDPR).
+      </p>
+
+      <h2>Google Analytics</h2>
+      <p>
+        If you allow it in the consent bar, this site loads Google Analytics to count visits. Google Analytics then
+        sets cookies whose names start with <code>_ga</code>. It sends Google your IP address, your browser details,
+        the pages you open, and the page you came from. Google may process this data in the United States under the
+        <a href="https://policies.google.com/privacy">Google Privacy Policy</a>.
+        Advertising features and Google Signals are turned off, so the data is not used for ads and is not linked
+        across your devices. The legal basis is your consent (Art. 6(1)(a) GDPR). If the site has no analytics set
+        up, there is no bar and nothing is loaded.
+      </p>
+      <p>
+        Your choice, allow or decline, is kept in your browser's local storage, so the bar does not ask again. You can
+        take back your consent at any time with the "Analytics choice" link under the game. It deletes the analytics
+        cookies and asks you again.
+      </p>
+
+      <h2>Hosting</h2>
+      <p>
+        The game is hosted on Cloudflare (Workers static assets). When you open the game, Cloudflare gets your IP address
+        and browser details. It may keep them in server logs to serve the site and to protect it from abuse. Cloudflare
+        is based in the United States and processes this data under the
+        <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare Privacy Policy</a>. The legal basis is a
+        legitimate interest in running a secure website (Art. 6(1)(f) GDPR).
+      </p>
+
+      <h2>How Long Data Is Kept</h2>
+      <ul>
+        <li>Your analytics choice stays in your browser's local storage until you clear it or click "Analytics
+          choice".</li>
+        <li>Google Analytics keeps visit data for 14 months and then deletes it. The <code>_ga</code> cookies expire
+          after two years, or earlier if you delete them or take back your consent.</li>
+        <li>Your guest sign-in stays in your browser until you clear the site data or sign out.</li>
+        <li>Leaderboard entries and game records are kept until you delete your entry or ask me to remove it, or
+          until the leaderboard is shut down.</li>
+        <li>Open rooms are removed after ten minutes at most. The record of a finished game is kept until you ask me to
+          remove it, or until the service is shut down.</li>
+        <li>Google and Cloudflare keep their server logs for as long as their privacy statements say.</li>
+      </ul>
+
+      <p class="muted">Last updated: September 2026.</p>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+/* The colours come from tokens.css, the same file the game page uses. */
+@import url('tokens.css');
+:root {
+  color-scheme: light;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--go-surface);
+  color: var(--go-fg-soft);
+  font:
+    15px/1.6 system-ui,
+    sans-serif;
+}
+main {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+h1 {
+  color: var(--go-fg);
+  font-size: 1.5rem;
+  margin: 0 0 1rem;
+}
+h2 {
+  color: var(--go-fg);
+  font-size: 1.125rem;
+  margin: 1.5rem 0 0.5rem;
+}
+main a {
+  color: var(--go-accent);
+}
+code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.9em;
+}
+.muted {
+  color: var(--go-fg-muted);
+}

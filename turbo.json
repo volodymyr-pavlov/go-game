@@ -1,0 +1,30 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build:wasm": {
+      "cache": false
+    },
+    "build": {
+      "dependsOn": ["@go-game/engine#build:wasm"],
+      "outputs": [".dist/**"]
+    },
+    "dev": {
+      "dependsOn": ["@go-game/engine#build:wasm"],
+      "cache": false,
+      "persistent": true
+    },
+    "typecheck": {},
+    "test:unit": {},
+    "test": {
+      "dependsOn": ["test:unit"]
+    },
+    "test:e2e": {
+      "dependsOn": ["@go-game/engine#build:wasm"],
+      "cache": false
+    },
+    "test:e2e:firebase": {
+      "dependsOn": ["@go-game/engine#build:wasm"],
+      "cache": false
+    }
+  }
+}

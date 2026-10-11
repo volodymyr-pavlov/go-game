@@ -1,0 +1,35 @@
+{
+  "name": "@go-game/web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:firebase": "sh scripts/firebase-auth-emulator.sh \"VITE_FIREBASE_EMULATOR=127.0.0.1 npx playwright test\"",
+    "firebase:auth-emulator": "sh scripts/firebase-auth-emulator.sh"
+  },
+  "dependencies": {
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/plus-jakarta-sans": "^5.3.0",
+    "@go-game/bridge": "*",
+    "@go-game/client": "*",
+    "@go-game/core": "*",
+    "@go-game/presentation": "*",
+    "@go-game/types": "*",
+    "canvas-confetti": "^1.9.4",
+    "firebase": "^12.19.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/canvas-confetti": "^1.9.0",
+    "happy-dom": "^20.14.5",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.0"
+  }
+}

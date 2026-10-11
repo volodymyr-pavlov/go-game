@@ -1,0 +1,28 @@
+/* The colours of the page, in one place. src/styles/main.css imports this file for the game and gives the colours
+   to Tailwind; public/legal.css imports it for the privacy and terms pages. The loader in index.html copies two of
+   them, because it must show before any stylesheet has arrived. */
+:root {
+  --go-canvas: #e2e8f0;
+  --go-surface: #ffffff;
+  --go-inset: #f1f5f9;
+  --go-input: #ffffff;
+  --go-control: #f7e8d2;
+  --go-control-hover: #ead6b8;
+  --go-line: #e2e8f0;
+  --go-line-strong: #d9c4a3;
+  --go-fg: #0f172a;
+  --go-fg-soft: #334155;
+  --go-fg-muted: #64748b;
+  --go-accent: #b45309;
+  /* The bright orange that marks the player to move, the thinking notice and the focused field. */
+  --go-highlight: #f59e0b;
+  --go-primary: #d9b98a;
+  --go-primary-hover: #cfa96f;
+  --go-primary-line: #bf9a5c;
+  --go-good: #047857;
+  --go-danger: #be123c;
+  --go-danger-soft: #ffe4e6;
+  --go-scrim: rgba(15, 23, 42, 0.55);
+  /* The colour of every drop shadow, a dark brown that suits the wooden board. Used at 10 to 25 percent. */
+  --go-shade: #451a03;
+}

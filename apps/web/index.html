@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en" class="go:h-full go:bg-canvas go:text-fg">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nine-by-Nine Go</title>
+    <meta name="description" content="Play 9x9 Go (Weiqi) in the browser against Gopher, Bear and Elephant, three levels of a Monte Carlo Tree Search engine written in Go and running as WebAssembly." />
+    <meta name="author" content="Volodymyr Pavlov" />
+    <meta name="theme-color" content="#b45309" />
+    <link rel="canonical" href="https://go-game.volodymyr-pavlov.workers.dev/" />
+    <meta property="og:site_name" content="Nine-by-Nine Go" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Nine-by-Nine Go: play Go in your browser" />
+    <meta property="og:description" content="Play 9x9 Go (Weiqi) in the browser against Gopher, Bear and Elephant, three levels of a Monte Carlo Tree Search engine written in Go and running as WebAssembly." />
+    <meta property="og:url" content="https://go-game.volodymyr-pavlov.workers.dev/" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Nine-by-Nine Go: play Go in your browser" />
+    <meta name="twitter:description" content="Play 9x9 Go (Weiqi) in the browser against Gopher, Bear and Elephant, three levels of a Monte Carlo Tree Search engine written in Go and running as WebAssembly." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230f172a'/%3E%3Ccircle cx='12' cy='11' r='4' fill='%23ffffff' opacity='.55'/%3E%3C/svg%3E" />
+    <!-- The loader has its own styles, so it shows before the scripts and the stylesheet have arrived. The page colours
+         are copied from public/tokens.css (canvas and fg-muted), the board colours from src/presentation/skins/SkinRegistry.ts. -->
+    <style>
+      #loader {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        background: #e2e8f0;
+        color: #64748b;
+        font: 500 0.875rem 'Plus Jakarta Sans', system-ui, sans-serif;
+        transition: opacity 0.3s ease-out;
+      }
+      #loader.go-loader-done {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #loader svg {
+        width: 6rem;
+        height: 6rem;
+        border-radius: 0.5rem;
+        box-shadow:
+          0 12px 16px -6px rgba(92, 64, 32, 0.35),
+          0 4px 8px -4px rgba(92, 64, 32, 0.25);
+      }
+      #loader .go-loader-stone {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: go-loader-place 2.4s ease-out infinite;
+      }
+      #loader .go-loader-stone:nth-child(2) {
+        animation-delay: 0.45s;
+      }
+      #loader .go-loader-stone:nth-child(3) {
+        animation-delay: 0.9s;
+      }
+      #loader .go-loader-stone:nth-child(4) {
+        animation-delay: 1.35s;
+      }
+      @keyframes go-loader-place {
+        0% {
+          transform: scale(0);
+          opacity: 1;
+        }
+        8% {
+          transform: scale(1.15);
+        }
+        12%,
+        75% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        85%,
+        100% {
+          transform: scale(1);
+          opacity: 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #loader .go-loader-stone {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="go:min-h-full go:lg:h-full go:lg:overflow-hidden go:bg-canvas go:text-fg go:flex go:flex-col">
+    <noscript><p class="go:p-4 go:text-sm">This game needs JavaScript.</p></noscript>
+    <div id="loader" role="status" aria-live="polite">
+      <svg viewBox="0 0 96 96" aria-hidden="true">
+        <rect width="96" height="96" fill="#f7e8d2" />
+        <path d="M16 16H80M16 32H80M16 48H80M16 64H80M16 80H80M16 16V80M32 16V80M48 16V80M64 16V80M80 16V80" stroke="#5c4020" stroke-width="1.2" fill="none" />
+        <circle cx="48" cy="48" r="1.8" fill="#5c4020" />
+        <g>
+          <circle class="go-loader-stone" cx="48" cy="32" r="7.5" fill="#111827" />
+          <circle class="go-loader-stone" cx="32" cy="48" r="7.5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.6" />
+          <circle class="go-loader-stone" cx="64" cy="48" r="7.5" fill="#111827" />
+          <circle class="go-loader-stone" cx="48" cy="64" r="7.5" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.6" />
+        </g>
+      </svg>
+      <p>Setting up the board…</p>
+    </div>
+    <div id="framed" hidden class="go:p-4 go:text-sm go:text-fg" role="alert">
+      This game does not run inside another site's frame. <a href="https://go-game.volodymyr-pavlov.workers.dev/" target="_top" class="go:underline">Open it directly.</a>
+    </div>
+    <div id="unsupported" hidden class="go:p-4 go:text-sm go:text-fg" role="alert">
+      This browser cannot run the game: it needs WebAssembly and Web Workers (Chrome 90+, Firefox 90+, Safari 15+, Edge 90+).
+    </div>
+    <header id="navbar" class="go:w-full go:max-w-xl go:mx-auto go:mt-3 go:md:mt-5 go:bg-surface go:border go:border-line go:rounded-2xl go:shrink-0 go:card-shadow"></header>
+
+    <main id="app" class="go:flex-1 go:lg:overflow-hidden go:flex go:flex-col go:p-3 go:md:p-5 go:max-w-[90rem] go:mx-auto go:w-full go:lg:min-h-0"></main>
+
+    <footer class="go:text-[11px] go:text-fg-muted go:text-center go:py-2 go:shrink-0">
+      <a href="privacy.html" class="go:hover:text-fg go:underline">Privacy</a> ·
+      <a href="terms.html" class="go:hover:text-fg go:underline">Terms</a> ·
+      <span data-consent-reset-item hidden>
+        <a href="#" data-consent-reset class="go:hover:text-fg go:underline">Analytics choice</a> ·
+      </span>
+      <a href="third-party-licenses.txt" class="go:hover:text-fg go:underline">Licenses</a> ·
+      <a href="https://volodymyr-pavlov.github.io/" class="go:hover:text-fg go:underline">volodymyr-pavlov.github.io</a>
+    </footer>
+
+    <template id="game-page">
+      <div class="go:contents">
+      <!-- On large screens a grid of three columns and two rows: an empty column, the board column, the side panel.
+           The outer columns share the spare width, so the board sits in the middle of the page wherever the panel
+           leaves room for it. The opponent's badge takes the first row of the board column, and the board and the
+           side panel share the second, so the panel's top lines up with the board's. -->
+      <div class="go:flex-1 go:lg:overflow-hidden go:flex go:flex-col go:lg:grid go:lg:grid-cols-[1fr_minmax(0,560px)_1fr] go:lg:grid-rows-[auto_minmax(0,1fr)] go:gap-4 go:lg:gap-x-6 go:lg:gap-y-4 go:w-full go:min-h-0">
+        <div class="go:hidden go:lg:block go:lg:row-span-2"></div>
+        <div id="opponent-badge" class="go:flex go:flex-col go:items-center go:gap-2 go:shrink-0 go:lg:col-start-2 go:lg:row-start-1">
+          <img id="opponent-avatar" src="skins/classic/opponents/gopher.png" alt="Gopher" width="96" height="96" class="go:w-24 go:h-24 go:rounded-full go:border-2 go:border-highlight/50 go:shadow-md go:shadow-shade/12" />
+          <div id="opponent-plate" class="go:h-8 go:rounded-lg go:card-shadow" aria-hidden="true"></div>
+        </div>
+        <!-- On large screens the cell is a size container, so the board can be as wide as the cell is tall (100cqh)
+             and never taller than the row that holds it. -->
+        <div class="go:flex go:flex-col go:items-center go:relative go:min-h-0 go:shrink-0 go:lg:shrink go:lg:col-start-2 go:lg:row-start-2 go:lg:[container-type:size]">
+          <div id="board-frame" class="go-board-frame go:relative go:w-full go:lg:w-[min(100%,100cqh)] go:max-w-[560px] go:shrink-0 go:lg:shrink go:aspect-square go:rounded-2xl go:p-3 go:sm:p-4 go:border-4 go-goban-shadow go:flex go:items-center go:justify-center go:overflow-hidden">
+            <div id="board" class="go:w-full go:h-full go:flex go:items-center go:justify-center go:rounded-xl go:overflow-hidden go:shadow-inner go:shadow-shade/15 go:cursor-pointer go:touch-none"></div>
+
+            <div id="thinking-overlay" class="go-modal-hidden go:absolute go:top-6 go:left-6 go:px-3.5 go:py-1.5 go:rounded-full go:bg-surface/95 go:backdrop-blur-md go:border go:border-highlight/40 go:text-accent go:text-xs go:font-semibold go:shadow-xl go:shadow-shade/20 go:transition-all go:duration-300 go:flex go:items-center go:gap-2 go:z-20">
+              <span class="go:w-2 go:h-2 go:rounded-full go:bg-highlight go:animate-ping"></span>
+              <span id="thinking-text">Thinking...</span>
+            </div>
+          </div>
+
+          <div id="toast" class="go:absolute go:bottom-6 go:left-1/2 go:-translate-x-1/2 go:whitespace-nowrap go:bg-surface go-modal-hidden go:px-4 go:py-2 go:border go:border-highlight/50 go:text-accent go:text-xs go:sm:text-sm go:font-semibold go:rounded-full go:transition-all go:duration-300 go:shadow-md go:shadow-shade/12 go:flex go:items-center go:gap-2 go:z-20">
+            <span class="go:text-accent">⚠</span>
+            <span id="toast-msg">Illegal move</span>
+          </div>
+        </div>
+
+        <div class="go:w-full go:lg:w-80 go:xl:w-96 go:flex go:flex-col go:gap-3 go:shrink-0 go:lg:overflow-y-auto go:lg:col-start-3 go:lg:row-start-2">
+          <section id="engine-error" role="alert" hidden class="go:card go:border-danger/50 go:text-xs go:text-fg">
+            <p class="go:font-semibold go:text-danger">The engine could not answer.</p>
+            <p class="go:mt-1 go:text-fg-soft">Reload the page to try again, or switch to Local 2-player. Your browser needs WebAssembly and Web Workers.</p>
+            <p id="engine-error-detail" class="go:mt-1.5 go:font-mono go:text-[10px] go:text-fg-muted go:break-words"></p>
+          </section>
+          <section class="go:card">
+            <div class="go:flex go:items-center go:justify-between">
+              <div class="go:px-2.5 go:py-0.5 go:rounded-full go:text-[11px] go:font-semibold go:bg-accent/10 go:text-accent go:border go:border-accent/20 go:flex go:items-center go:gap-1.5">
+                <span class="go:w-2 go:h-2 go:rounded-full go:bg-accent go:animate-pulse"></span> <b id="current-turn-text" title="To play">Black</b>
+              </div>
+              <button type="button" id="rules-btn" class="go:chip-button">? Rules</button>
+            </div>
+
+            <div class="go:mt-3 go:flex go:items-center go:justify-between go:gap-2 go:bg-inset go:p-2.5 go:rounded-xl go:border go:border-line">
+              <div id="black-card" class="go:flex-1 go:flex go:items-center go:gap-2.5 go:p-2 go:rounded-lg go:border-2 go:border-highlight/60 go:bg-highlight/10">
+                <div class="go:w-7 go:h-7 go:rounded-full go:bg-black go:border-2 go:border-fg-muted go:shadow go:flex go:items-center go:justify-center go:text-white go:text-xs go:shrink-0">●</div>
+                <div class="go:min-w-0">
+                  <div id="black-label" class="go:text-[11px] go:text-fg-soft go:font-semibold go:truncate">You</div>
+                  <div id="black-score" class="go:text-xs go:font-bold go:text-fg">0 captures</div>
+                </div>
+              </div>
+              <div id="white-card" class="go:flex-1 go:flex go:items-center go:gap-2.5 go:p-2 go:rounded-lg go:border-2 go:border-transparent">
+                <div class="go:w-7 go:h-7 go:rounded-full go:bg-white go:border-2 go:border-line go:shadow go:flex go:items-center go:justify-center go:text-black go:text-xs go:shrink-0">○</div>
+                <div class="go:min-w-0">
+                  <div id="white-label" class="go:text-[11px] go:text-fg-soft go:font-semibold go:truncate">Gopher</div>
+                  <div id="white-score" class="go:text-xs go:font-bold go:text-fg">0 captures</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="go:card go:space-y-3">
+            <div id="skin-row" class="go:flex go:items-center go:justify-end">
+              <button type="button" id="skin-btn" class="go:chip-button">Skin</button>
+            </div>
+            <p id="online-notice" hidden class="go:text-xs go:text-accent go:font-semibold"></p>
+            <div class="go:grid go:grid-cols-2 go:gap-2">
+              <label id="game-mode-field" class="go:text-xs go:text-fg-soft go:flex go:flex-col go:gap-1">
+                <span class="go:text-[11px] go:text-fg-muted">Game mode</span>
+                <select id="game-mode-select" class="go:bg-input go:border go:border-line-strong go:rounded-lg go:px-2.5 go:py-1.5 go:text-xs go:text-fg go:font-medium go:focus:outline-none go:focus:border-highlight">
+                  <option value="2">You play Black</option>
+                  <option value="1">You play White</option>
+                  <option value="0">Local 2-player</option>
+                </select>
+              </label>
+              <label class="go:text-xs go:text-fg-soft go:flex go:flex-col go:gap-1">
+                <span class="go:text-[11px] go:text-fg-muted">Opponent</span>
+                <select id="opponent-select" class="go:bg-input go:border go:border-line-strong go:rounded-lg go:px-2.5 go:py-1.5 go:text-xs go:text-fg go:font-medium go:focus:outline-none go:focus:border-highlight">
+                  <!-- Filled from src/core/opponents.ts by GameControls. -->
+                </select>
+              </label>
+            </div>
+
+            <div class="go:grid go:grid-cols-3 go:gap-2 go:pt-1">
+              <button type="button" id="pass-btn" class="go:py-2 go:px-3 go:bg-control go:hover:bg-control-hover go:active:scale-95 go:border go:border-line-strong go:rounded-xl go:text-xs go:font-semibold go:text-fg go:shadow-md go:shadow-shade/12 go:transition">Pass</button>
+              <button type="button" id="resign-btn" class="go:py-2 go:px-3 go:bg-danger-soft go:hover:bg-danger/20 go:active:scale-95 go:border go:border-danger/30 go:rounded-xl go:text-xs go:font-semibold go:text-danger go:shadow-md go:shadow-shade/12 go:transition">Resign</button>
+              <button type="button" id="reset-btn" class="go:py-2 go:px-3 go:bg-primary go:hover:bg-primary-hover go:active:scale-95 go:border go:border-primary-line go:rounded-xl go:text-xs go:font-bold go:text-fg go:shadow-md go:shadow-shade/12 go:transition">New game</button>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <div id="rules-modal" class="go-modal-hidden go:modal-backdrop go:backdrop-blur-sm">
+        <div class="go:modal-shell go:max-w-xl">
+          <div class="go:modal-head">
+            <h2 class="go:font-bold go:text-fg go:text-sm">Go rules overview</h2>
+            <button type="button" id="close-rules-modal" class="go:modal-close" aria-label="Close">✕</button>
+          </div>
+          <div class="go:p-6 go:overflow-y-auto go:space-y-3.5 go:text-xs go:text-fg-soft go:leading-relaxed">
+            <div class="go:bg-inset go:p-3 go:rounded-xl go:border go:border-line">
+              <h3 class="go:font-semibold go:text-accent go:mb-1">1. Stones and liberties</h3>
+              <p class="go:text-fg-muted">Black plays first. Stones are placed on intersections. Connected stones of one colour form a group sharing liberties (adjacent empty points).</p>
+            </div>
+            <div class="go:bg-inset go:p-3 go:rounded-xl go:border go:border-line">
+              <h3 class="go:font-semibold go:text-accent go:mb-1">2. Captures, suicide and ko</h3>
+              <p class="go:text-fg-muted">A group with no liberties is captured and removed. Suicide is prohibited. Immediately retaking a ko is illegal.</p>
+            </div>
+            <div class="go:bg-inset go:p-3 go:rounded-xl go:border go:border-line">
+              <h3 class="go:font-semibold go:text-accent go:mb-1">3. Scoring (area rules)</h3>
+              <p class="go:text-fg-muted">Score = stones on the board + surrounded empty points. White receives <b data-komi></b> komi. The game ends after two consecutive passes.</p>
+            </div>
+          </div>
+          <div class="go:modal-foot">
+            <button type="button" id="close-rules-btn" class="go:px-5 go:py-2 go:rounded-xl go:bg-primary go:hover:bg-primary-hover go:text-fg go:font-bold go:text-xs go:transition">Understood</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="skin-modal" class="go-modal-hidden go:modal-backdrop go:backdrop-blur-sm">
+        <div class="go:modal-shell go:max-w-md">
+          <div class="go:modal-head">
+            <h2 class="go:font-bold go:text-fg go:text-sm">Board skin</h2>
+            <button type="button" id="close-skin-modal" class="go:modal-close" aria-label="Close">✕</button>
+          </div>
+          <div id="skin-list" class="go:p-4 go:overflow-y-auto go:space-y-2">
+            <!-- Filled from src/presentation/skins/SkinRegistry.ts by SkinSelectorModal. -->
+          </div>
+          <div class="go:modal-foot">
+            <button type="button" id="close-skin-btn" class="go:px-5 go:py-2 go:rounded-xl go:bg-primary go:hover:bg-primary-hover go:text-fg go:font-bold go:text-xs go:transition">Done</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="gameover-modal" class="go-modal-hidden go:modal-backdrop go:backdrop-blur-md">
+        <div class="go:bg-surface go:border go:border-line go:rounded-3xl go:w-full go:max-w-md go:p-6 go:text-center go:shadow-2xl go:shadow-shade/25">
+          <div class="go:w-16 go:h-16 go:rounded-full go:bg-highlight/20 go:border-2 go:border-highlight/40 go:text-accent go:mx-auto go:flex go:items-center go:justify-center go:text-2xl go:mb-4">🏆</div>
+          <h2 id="winner-title" class="go:text-2xl go:font-bold go:text-fg">Black wins!</h2>
+          <p id="winner-reason" class="go:text-xs go:text-fg-muted go:mt-1"></p>
+
+          <div class="go:my-5 go:bg-inset go:rounded-2xl go:p-4 go:border go:border-line go:space-y-3">
+            <div class="go:flex go:items-center go:justify-between go:text-xs go:pb-2 go:border-b go:border-line">
+              <div class="go:flex go:items-center go:gap-2">
+                <span class="go:w-3 go:h-3 go:rounded-full go:bg-black go:border go:border-fg-muted"></span>
+                <span class="go:font-semibold go:text-fg">Black total</span>
+              </div>
+              <span id="black-final-score" class="go:font-bold go:text-accent go:text-sm"></span>
+            </div>
+            <div class="go:flex go:items-center go:justify-between go:text-[11px] go:text-fg-muted go:px-2">
+              <span>Stones: <b id="black-stones">0</b></span>
+              <span>Territory: <b id="black-territory">0</b></span>
+            </div>
+            <div class="go:flex go:items-center go:justify-between go:text-xs go:pt-2 go:border-t go:border-line">
+              <div class="go:flex go:items-center go:gap-2">
+                <span class="go:w-3 go:h-3 go:rounded-full go:bg-white go:border go:border-line"></span>
+                <span class="go:font-semibold go:text-fg">White total</span>
+              </div>
+              <span id="white-final-score" class="go:font-bold go:text-accent go:text-sm"></span>
+            </div>
+            <div class="go:flex go:items-center go:justify-between go:text-[11px] go:text-fg-muted go:px-2">
+              <span>Stones: <b id="white-stones">0</b></span>
+              <span>Territory: <b id="white-territory">0</b></span>
+              <span>Komi: <b data-komi></b></span>
+            </div>
+          </div>
+
+          <button type="button" id="modal-reset-btn" class="go:w-full go:py-3 go:px-4 go:bg-primary go:hover:bg-primary-hover go:text-fg go:font-bold go:rounded-xl go:shadow-lg go:shadow-shade/15 go:transition go:text-xs go:uppercase go:tracking-wider">Play new game</button>
+        </div>
+      </div>
+      </div>
+    </template>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

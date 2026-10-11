@@ -1,0 +1,13 @@
+.dist
+.turbo
+node_modules
+packages/engine
+apps/*/public/wasm_exec.js
+apps/*/public/engine.wasm
+apps/tma/public/skins
+apps/youtube/public/skins
+package-lock.json
+apps/web/index.html
+apps/web/public/privacy.html
+apps/web/public/terms.html
+.reports

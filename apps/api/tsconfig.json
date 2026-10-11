@@ -1,0 +1,4 @@
+{
+  "extends": "@go-game/tsconfig/worker.json",
+  "include": ["src"]
+}

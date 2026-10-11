@@ -1,0 +1,20 @@
+{
+  "name": "@go-game/presentation",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "dependencies": {
+    "@go-game/bridge": "*",
+    "@go-game/client": "*",
+    "@go-game/core": "*",
+    "@go-game/types": "*",
+    "pixi.js": "^8.21.0"
+  },
+  "scripts": {
+    "typecheck": "tsc",
+    "test:unit": "vitest run"
+  }
+}

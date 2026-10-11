@@ -1,0 +1,11 @@
+{
+  // Phase 1: the game as a static site, with no game server behind it. `wrangler deploy --config apps/web/wrangler.jsonc`
+  // puts the build in .dist/ online. The name is the one of the Worker in apps/api, so the address does not change when
+  // the server is deployed there later, and that deploy replaces this one.
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "go-game",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": ".dist",
+  },
+}

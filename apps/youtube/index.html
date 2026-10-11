@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Nine-by-Nine Go</title>
+    <script src="https://www.youtube.com/game_api/v1"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #e2e8f0;
+        color: #0f172a;
+        font:
+          16px system-ui,
+          sans-serif;
+        overflow: hidden;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+      }
+      #status {
+        min-height: 1.5em;
+        font-weight: 600;
+      }
+      #board {
+        width: min(100vw - 24px, 100vh - 150px);
+        aspect-ratio: 1;
+        touch-action: none;
+      }
+      #buttons {
+        display: flex;
+        gap: 8px;
+      }
+      button {
+        min-height: 44px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 12px;
+        background: #b45309;
+        color: #fff;
+        font: inherit;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="status" role="status"></div>
+    <div id="board"></div>
+    <div id="buttons">
+      <button id="pass" type="button">Pass</button>
+      <button id="resign" type="button">Resign</button>
+      <button id="new" type="button">New game</button>
+    </div>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
