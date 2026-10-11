@@ -20,19 +20,23 @@ for people (messages, nicknames) and for identifiers (uids, element ids).
 2. Run `npm run dev` to try the change. Check that `npm run check`, `npm test` and `npm run test:e2e`
    pass, and that `gofmt -l engine` prints nothing. A change to accounts, the leaderboard or online play also needs
    `npm run test:e2e:firebase`, which starts the Firebase Auth emulator and the game server itself.
-3. Add a line under `Unreleased` in `CHANGELOG.md` if players can see the change, or if it changes the engine.
+3. Write the commit message in the [Conventional Commits](https://www.conventionalcommits.org/) style. `fix:` makes a
+   patch release, `feat:` a minor release, and `feat!:` or a `BREAKING CHANGE:` footer a major release. The messages
+   decide the next version number. Use `feat!:` for a change to the rules or the scoring that players see.
 4. Open a pull request against `main` that says what changed and why.
 
 ## Releasing
 
-Versions follow [Semantic Versioning](https://semver.org/): MAJOR for changes to the rules or the scoring that
-players see, MINOR for new features and changes in engine strength, PATCH for fixes.
+Merging to `main` is all it takes. After the deploy, the `release` job runs semantic-release. It writes the notes of the
+release into `CHANGELOG.md`, commits that file to `main` as `chore(release): X.Y.Z`, creates the `vX.Y.Z` tag, and
+creates a GitHub Release with the same notes. The release commit starts no workflow of its own.
 
-1. Rename `## [Unreleased]` in `CHANGELOG.md` to `## [X.Y.Z] - YYYY-MM-DD` and add an empty `## [Unreleased]`
-   above it. Set the same version in `package.json`.
-2. Commit with the message `Release vX.Y.Z`, then `git tag -a vX.Y.Z -m "vX.Y.Z"` and `git push origin main vX.Y.Z`.
-3. The `release` job of the workflow checks that the section exists and creates the GitHub Release from it. The tag does not
-   deploy the site: only the default branch goes to Cloudflare, see "Production setup" in `README.md`.
+The job uses the workflow's own `GITHUB_TOKEN`, which may push the commit and create the release. Do not edit
+`CHANGELOG.md` by hand. The commit messages generate it.
+
+`.releaserc.yml` names the plugins in the order that they run. `release/package.json` pins semantic-release and every
+plugin to an exact version, and `release/package-lock.json` locks the rest. To bump a version, change it in
+`release/package.json`, run `npm install --prefix release --package-lock-only`, and commit both files.
 
 ## Licensing
 

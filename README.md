@@ -92,8 +92,9 @@ fly. The `wrangler` command comes with `npm install`.
    Cloudflare Workers" template) and `CLOUDFLARE_ACCOUNT_ID`, and optionally the variable `VITE_GA4_ID`. Do not set the `VITE_FIREBASE_*` variables yet.
 
 The workflow in `.github/workflows/ci.yml` runs the checks (`check-web`, `test-engine`, `build-engine`, `e2e`) and the
-`build` on every pull request, push to `main` and tag. A push to `main` runs `deploy`, which puts the build online. A
-`git tag -a vX.Y.Z` (see `CONTRIBUTING.md`) runs `release`, which publishes the GitHub Release from `CHANGELOG.md`.
+`build` on every pull request and push to `main`. A push to `main` runs `deploy`, which puts the build online, and then
+`release`: semantic-release reads the commit messages since the last tag, and a `feat` or `fix` commit writes
+`CHANGELOG.md`, tags `vX.Y.Z` and creates the GitHub Release (see `CONTRIBUTING.md`).
 
 **Accounts, the leaderboard and online play (next).** They need sign-in from Firebase and the game server on
 Cloudflare. Sign-in, once per Firebase project, in the console at https://console.firebase.google.com:
@@ -154,7 +155,9 @@ go-game/
 ├── docs/                       # the cover picture of this README
 ├── scripts/                    # check-tsdoc.mjs, sync-skins.mjs
 ├── turbo.json                  # the tasks Turborepo runs, and in which order
-└── .github/workflows/          # ci.yml: tests, e2e, build, Cloudflare deploy, release on tags; deploy.yml: by hand
+├── .releaserc.yml              # semantic-release plugins, in the order they run
+├── release/                    # semantic-release and its plugins, pinned by a lockfile for the release job
+└── .github/workflows/          # ci.yml: tests, e2e, build, Cloudflare deploy, semantic-release; deploy.yml: by hand
 ```
 
 `packages/core` and `packages/client` are not in the sketch the layout came from. The rules and the client are shared by all
